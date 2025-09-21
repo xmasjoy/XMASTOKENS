@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>$XMAS — Merry Token</title>
+  <meta name="description" content="$XMAS is the Christmas meme token — 0% tax, LP locked, presale buyers rewarded." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root{
+      --emerald:#10b981;
+      --gold:#f6c85f;
+      --deep-red:#7f1d1d;
+      --glass: rgba(255,255,255,0.06);
+      --muted: rgba(255,255,255,0.72);
+    }
+    html,body{height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif}
+    body{
+      margin:0;
+      background: linear-gradient(180deg,#4b0f0f 0%, #083927 50%, #0f172a 100%);
+      color:#fff;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* layered snowfall */
+    .snow-layer{
+      position:fixed; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:2;
+      background-image: radial-gradient(circle at 10px 10px, rgba(255,255,255,0.9) 1px, transparent 2px);
+      background-size: 18px 18px;
+      opacity:0.18;
+      mix-blend-mode: screen;
+      animation:fall1 22s linear infinite;
+      filter: blur(0.3px);
+    }
+    .snow-layer.slow{animation-duration:36s; opacity:0.07; background-size:30px 30px;}
+    .snow-layer.fast{animation-duration:12s; opacity:0.22; background-size:12px 12px;}
+    @keyframes fall1 { from{transform:translateY(-10%)} to{transform:translateY(110%)} }
+
+    /* header ribbon */
+    .ribbon{
+      position:relative;
+      background:linear-gradient(90deg, rgba(0,0,0,0.12), rgba(255,255,255,0.02));
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      z-index:10;
+    }
+    .ribbon::before{
+      content:"";
+      position:absolute; left:0; right:0; top:0; height:6px;
+      background: linear-gradient(90deg,var(--gold), #ffd47a, var(--emerald));
+      filter:blur(10px); opacity:0.85;
+    }
+
+    /* glass cards */
+    .glass{
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      backdrop-filter: blur(8px) saturate(140%);
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 8px 30px rgba(2,6,23,0.5);
+    }
+
+    /* shimmer button */
+    .btn-shimmer{
+      position:relative; overflow:hidden;
+      transition:transform .12s ease, box-shadow .12s ease;
+    }
+    .btn-shimmer:hover{ transform:translateY(-3px); box-shadow:0 12px 40px rgba(16,185,129,0.12); }
+    .btn-shimmer::after{
+      content:""; position:absolute; inset:0; transform: translateX(-100%); background:linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent); mix-blend-mode:overlay;
+      transition:transform .9s ease;
+    }
+    .btn-shimmer:hover::after{ transform: translateX(100%) }
+
+    /* glowing gold button */
+    .gold{
+      background: linear-gradient(90deg,var(--gold), #ffd98a);
+      color:#0b1220; font-weight:700;
+    }
+
+    /* subtle headings */
+    h1,h2{letter-spacing:-0.02em}
+    .muted{color:var(--muted)}
+
+    /* tokenomics grid */
+    .stat-num{font-weight:800; font-size:1.9rem; color:var(--emerald)}
+
+    /* roadmap timeline */
+    .timeline{position:relative; padding-left:1.25rem}
+    .timeline::before{content:""; position:absolute; left:8px; top:0; bottom:0; width:3px; background:linear-gradient(180deg,var(--gold), var(--emerald)); border-radius:4px; opacity:0.12}
+
+    /* faq */
+    .faq summary{cursor:pointer; list-style:none}
+    .faq summary::-webkit-details-marker{display:none}
+
+    /* mobile tweaks */
+    @media(min-width:768px){
+      .hero-grid{display:grid; grid-template-columns: 1fr 360px; gap:36px; align-items:center;}
+    }
+    /* wallet pill */
+    .wallet-pill{background:rgba(255,255,255,0.04); padding:0.35rem 0.6rem; border-radius:999px; font-family:monospace; display:inline-block}
+
+    /* confetti canvas sits above snow */
+    #confettiCanvas{ position:fixed; inset:0; pointer-events:none; z-index:60; }
+  </style>
+</head>
+<body>
+
+  <!-- snow layers -->
+  <div class="snow-layer slow"></div>
+  <div class="snow-layer"></div>
+  <div class="snow-layer fast"></div>
+
+  <!-- confetti canvas (hidden until launch) -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- RIBBON / HEADER -->
+  <header class="ribbon py-3">
+    <div class="max-w-6xl mx-auto px-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div style="font-size:1.6rem">🎄</div>
+        <div>
+          <div class="text-sm muted">Merry Token</div>
+          <div class="font-extrabold text-lg"> $XMAS — Holiday Meme Token</div>
+        </div>
+      </div>
+      <div class="text-sm muted">Presale • LP locked • 0% tax</div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <main class="max-w-6xl mx-auto px-6 py-12">
+    <section class="hero-grid">
+      <div>
+        <h1 class="text-4xl md:text-6xl font-extrabold leading-tight drop-shadow-lg">
+          🎁 Celebrate & Invest — <span style="color:var(--emerald)">$XMAS</span>
+        </h1>
+        <p class="mt-4 text-lg muted max-w-2xl">
+          A festive, community-led meme token for Christmas 2025 — safe liquidity, zero tax, and rewards for early presale supporters.
+        </p>
+
+        <!-- trust / badges -->
+        <div class="mt-6 flex flex-wrap gap-3 items-center">
+          <span class="glass px-3 py-2 rounded-full text-sm">✅ LP Locked</span>
+          <span class="glass px-3 py-2 rounded-full text-sm">🔒 Renounced Contract (coming soon)</span>
+          <span class="glass px-3 py-2 rounded-full text-sm">🌐 Community-Driven</span>
+        </div>
+
+        <!-- Why invest -->
+        <div class="mt-8 glass rounded-2xl p-6">
+          <h2 class="text-2xl font-bold">Why invest?</h2>
+          <ul class="mt-4 grid sm:grid-cols-3 gap-4">
+            <li class="p-3">
+              <div class="stat-num">0%</div>
+              <div class="muted">No buy/sell tax — fair trading</div>
+            </li>
+            <li class="p-3">
+              <div class="stat-num">LP</div>
+              <div class="muted">Liquidity locked — safer market</div>
+            </li>
+            <li class="p-3">
+              <div class="stat-num">🎉</div>
+              <div class="muted">Community rewards & seasonal drops</div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Roadmap -->
+        <div class="mt-8">
+          <h2 class="text-2xl font-bold">Roadmap</h2>
+          <div class="mt-4 timeline space-y-5">
+            <div class="glass p-4 rounded-xl">
+              <div class="text-sm muted">Q3 2025</div>
+              <div class="font-semibold">Presale & Smart Contract Audit</div>
+              <div class="text-sm muted mt-2">Presale allocation opens, audit scheduled and community building.</div>
+            </div>
+            <div class="glass p-4 rounded-xl">
+              <div class="text-sm muted">Dec 15, 2025</div>
+              <div class="font-semibold">Launch & Liquidity Add</div>
+              <div class="text-sm muted mt-2">Launch on DEX, liquidity locked, listings outreach.</div>
+            </div>
+            <div class="glass p-4 rounded-xl">
+              <div class="text-sm muted">Q1 2026</div>
+              <div class="font-semibold">Marketing Push & Partnerships</div>
+              <div class="text-sm muted mt-2">Community events, AMAs, influencer outreach.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT PANE: countdown, wallet, ctas -->
+      <aside class="space-y-6">
+        <div class="glass rounded-2xl p-6 text-center">
+          <div class="text-xs uppercase muted tracking-widest">Countdown to Launch</div>
+          <div id="countdown" class="mt-3 text-4xl font-extrabold" data-target="2025-12-15T20:00:00">
+            00d : 00h : 00m : 00s
+          </div>
+          <p class="text-xs muted mt-2">Edit this date in the HTML: <code>data-target="YYYY-MM-DDTHH:MM:SS"</code></p>
+
+          <div class="mt-5 flex flex-col gap-3">
+            <a href="#presale" class="btn-shimmer gold rounded-2xl px-6 py-3 text-lg shadow-lg inline-block text-center">🎁 Join Presale</a>
+            <button onclick="copyWallet()" class="btn-shimmer glass rounded-2xl px-6 py-3 text-lg inline-block border border-white/8 font-semibold">📋 Copy Wallet</button>
+          </div>
+
+          <p class="mt-4 text-sm muted">Presale Wallet:</p>
+          <div class="mt-2 wallet-pill" id="wallet">0x78A4a13A3d9F2F229d49738e60fEa446AAb2F24d</div>
+        </div>
+
+        <!-- tokenomics -->
+        <div class="glass rounded-2xl p-6">
+          <h3 class="font-bold text-xl">Tokenomics</h3>
+          <div class="mt-4 grid grid-cols-2 gap-3">
+            <div class="p-3 text-center glass rounded-lg">
+              <div class="text-2xl font-extrabold text-emerald-300">45%</div>
+              <div class="text-sm muted">Presale</div>
+            </div>
+            <div class="p-3 text-center glass rounded-lg">
+              <div class="text-2xl font-extrabold text-emerald-300">35%</div>
+              <div class="text-sm muted">Liquidity</div>
+            </div>
+            <div class="p-3 text-center glass rounded-lg">
+              <div class="text-2xl font-extrabold text-emerald-300">10%</div>
+              <div class="text-sm muted">Team (vested)</div>
+            </div>
+            <div class="p-3 text-center glass rounded-lg">
+              <div class="text-2xl font-extrabold text-emerald-300">10%</div>
+              <div class="text-sm muted">Marketing</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- community links (coming soon placeholders) -->
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-sm muted">Community</div>
+          <div class="mt-3 flex justify-center gap-3">
+            <a href="https://www.instagram.com/420familyworldwide" target="_blank" class="glass px-4 py-2 rounded-lg">📸 Instagram</a>
+            <button class="glass px-4 py-2 rounded-lg muted">✈️ Telegram (Coming Soon)</button>
+            <button class="glass px-4 py-2 rounded-lg muted">🐦 X / Twitter (Coming Soon)</button>
+          </div>
+        </div>
+
+      </aside>
+    </section>
+
+    <!-- FAQ -->
+    <section id="presale" class="mt-12">
+      <div class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold">FAQ</h2>
+        <div class="mt-4 space-y-3">
+          <details class="faq p-3 rounded-lg glass">
+            <summary class="font-semibold">How do I join the presale?</summary>
+            <div class="mt-2 muted text-sm">Send ETH / BNB (depending on presale chain) to the presale wallet address shown above. Detailed presale steps and minimums will be published in the Telegram when it's live.</div>
+          </details>
+          <details class="faq p-3 rounded-lg glass">
+            <summary class="font-semibold">Is liquidity locked?</summary>
+            <div class="mt-2 muted text-sm">Yes — the plan is to lock liquidity after launch. We’ll publish the lock proof on the website once added.</div>
+          </details>
+          <details class="faq p-3 rounded-lg glass">
+            <summary class="font-semibold">What does 0% tax mean?</summary>
+            <div class="mt-2 muted text-sm">There are no automatic buy/sell fees built into the token contract — this promotes fair trading. Team allocations and marketing funds are handled via the tokenomics split.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- footer -->
+    <footer class="mt-12 text-center text-sm muted">
+      <p>© 2025 Merry Token ($XMAS). Not financial advice. Always DYOR before investing.</p>
+    </footer>
+  </main>
+
+  <script>
+    // copy wallet
+    function copyWallet(){
+      const ca = document.getElementById('wallet').textContent.trim();
+      if(!navigator.clipboard) {
+        alert('Copy: ' + ca);
+        return;
+      }
+      navigator.clipboard.writeText(ca).then(()=>{ alert('Wallet address copied!') }).catch(()=>{ alert('Copy failed — please copy manually.') })
+    }
+
+    // Countdown logic (keeps original behavior but uses calmer update cadence)
+    (function(){
+      const el = document.getElementById('countdown');
+      if(!el) return;
+      const targetStr = el.getAttribute('data-target');
+      let target = new Date(targetStr);
+      // if invalid date, try adding 'Z' (assume local timezone in most cases)
+      if(isNaN(target.getTime())) target = new Date(targetStr + 'Z');
+
+      function pad(n){ return String(n).padStart(2,'0') }
+      let launched = false;
+
+      function update(){
+        const now = new Date();
+        const diff = target - now;
+        if(diff <= 0){
+          if(!launched){
+            launched = true;
+            el.textContent = "LAUNCHED 🎉";
+            triggerLaunchCelebration();
+          } else {
+            el.textContent = "LAUNCHED 🎉";
+          }
+          return;
+        }
+        const s = Math.floor(diff/1000);
+        const d = Math.floor(s/86400);
+        const h = Math.floor((s%86400)/3600);
+        const m = Math.floor((s%3600)/60);
+        const sec = s%60;
+        el.textContent = `${pad(d)}d : ${pad(h)}h : ${pad(m)}m : ${pad(sec)}s`;
+      }
+
+      // update every 250ms for good visual, but not using requestAnimationFrame constantly
+      update();
+      setInterval(update, 250);
+    })();
+
+    // Lightweight confetti — draws colored rectangles/particles on canvas for a few seconds
+    function triggerLaunchCelebration(){
+      const canvas = document.getElementById('confettiCanvas');
+      if(!canvas) return;
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+      const ctx = canvas.getContext('2d');
+      const particles = [];
+      const colors = ['#ffd47a','#ff6b6b','#10b981','#7c3aed','#80dfff'];
+      const count = 140;
+
+      for(let i=0;i<count;i++){
+        particles.push({
+          x: Math.random()*canvas.width,
+          y: Math.random()*canvas.height - canvas.height*0.2,
+          vx: (Math.random()-0.5)*6,
+          vy: Math.random()*6 + 2,
+          size: Math.random()*8 + 4,
+          color: colors[Math.floor(Math.random()*colors.length)],
+          rot: Math.random()*360,
+          rotSpeed: (Math.random()-0.5)*10,
+          life: Math.random()*100 + 80
+        });
+      }
+
+      let frame = 0;
+      function draw(){
+        frame++;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        particles.forEach(p=>{
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.rotSpeed;
+          p.vy += 0.08; // gravity
+          p.life--;
+          ctx.save();
+          ctx.translate(p.x,p.y);
+          ctx.rotate(p.rot * Math.PI/180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size*0.6);
+          ctx.restore();
+        });
+        // remove dead
+        while(particles.length && particles[0].life<=0) particles.shift();
+        if(particles.length>0 && frame < 600){
+          requestAnimationFrame(draw);
+        } else {
+          ctx.clearRect(0,0,canvas.width,canvas.height);
+        }
+      }
+      draw();
+
+      // small page sparkle (add temporary text)
+      const origTitle = document.title;
+      document.title = "🎉 $XMAS Launched!";
+      setTimeout(()=>document.title = origTitle, 6000);
+    }
+
+    // responsive canvas resize
+    window.addEventListener('resize', ()=> {
+      const c = document.getElementById('confettiCanvas');
+      if(c){ c.width = innerWidth; c.height = innerHeight; }
+    });
+  </script>
+</body>
+</html>
